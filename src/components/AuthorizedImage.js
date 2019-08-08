@@ -6,15 +6,17 @@ export default function AuthorizedImage(props) {
   const [img, setImg] = useState('')
 
   async function fetchImage() {
-    await fetch(props.url, props.requestOptions).then(res => {
-      return res.blob()
-    }).then(imageBlob => {
-      let imgUrl = URL.createObjectURL(imageBlob)
-      setImg(imgUrl)
-    })
-    .catch(err => {
-      // console.log(err)
-    })
+    await fetch(props.url, props.requestOptions)
+      .then(res => {
+        return res.blob()
+      })
+      .then(imageBlob => {
+        let imgUrl = URL.createObjectURL(imageBlob)
+        setImg(imgUrl)
+      })
+      .catch(err => {
+        // console.log(err)
+      })
   }
 
   useEffect(() => {

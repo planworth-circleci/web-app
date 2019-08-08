@@ -1,7 +1,6 @@
 import { typeDefs } from '../models/typeDefs'
 import resolvers from '../controllers/resolvers'
 import { auth } from '../utils'
-import { config } from '../constants'
 
 import { ApolloClient } from 'apollo-client'
 import { createHttpLink } from 'apollo-link-http'

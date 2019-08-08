@@ -1,6 +1,6 @@
 import React from 'react'
 import hoistNonReactStatic from 'hoist-non-react-statics'
-import { getProp, keyBy } from './helpers'
+import { keyBy } from './helpers'
 import Interface from './Interface'
 import PropTypes from 'prop-types'
 
@@ -32,17 +32,6 @@ function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component'
 }
 
-function createProgressSelector(forms, formTabs) {
-  return function getFormProgress({ data }) {
-    const formResponses = getProp(data, ['myProfile', 'formResponses']) || []
-
-    return {
-      orgId: getProp(data, ['myProfile', 'profile', 'orgId']),
-      formProgress: new FormProgress({ forms, formResponses, formTabs }),
-    }
-  }
-}
-
 const FormProgressPropDefs = {
   forms: PropTypes.arrayOf(
     PropTypes.shape({
@@ -61,6 +50,7 @@ const FormProgressPropDefs = {
   ).isRequired,
 }
 
+// eslint-disable-next-line
 class FormProgress extends Interface {
   constructor(params) {
     super(params, FormProgressPropDefs)

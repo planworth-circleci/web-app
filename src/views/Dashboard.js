@@ -5,7 +5,7 @@ import Card from '@material-ui/core/Card'
 import CardActions from '@material-ui/core/CardActions'
 
 import Centered from '../components/Centered'
-import { P, Text } from '../components/Text'
+import { Text } from '../components/Text'
 import SampleRestQuery from '../components/graphql/SampleRestQuery'
 import AppNavbar from '../components/AppNavbar'
 import { to } from '../utils/router'
