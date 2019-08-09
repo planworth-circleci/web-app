@@ -1,0 +1,50 @@
+version: 2.0 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+    # working_directory: ~/src # directory where steps will run
+    docker: # run the steps with Docker
+      - image: circleci/node:11.5.0  # ...with this image as the primary container; this is where all `steps` will run
+    steps: # a collection of executable commands
+      - checkout # special step to check out source code to working directory
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      # Dependencies
+      - run:
+          name: Install dependencies
+          command:
+              sudo apt-get update && sudo apt-get install gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+      # Install AWS cli
+      - run:
+          name: Install aws cli
+          command:
+              sudo apt-get -y -qq install awscli
+      - restore_cache: # special step to restore the dependency cache
+          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache: # special step to save the dependency cache
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+     # - run: # run tests
+     #     name: test
+     #     command: npm test
+      - store_artifacts: # special step to save test results as as artifact
+          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+          path: ./coverage/clover.xml
+          prefix: tests
+      - store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/ 
+          path: coverage
+          prefix: coverage
+      - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: test-report.xml
+      # Building and deploying to S3 manually for now, CircleCI has issue installing headless chrome for react-snap
+      - run: # run tests
+          name: build
+          command: npm run build
+      - run:
+          name: Deploy to S3
+          command: aws s3 sync ./build s3://staging.planworth.co --delete --acl public-read
